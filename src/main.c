@@ -33,7 +33,7 @@ static char *kernel_params [] = {
 
 static void set_alt_param(void)
 {
-	kernel_params[2] = "alt";
+	kernel_params[2] = "rootfs_bak";
 }
 
 static void set_mem_param(void)

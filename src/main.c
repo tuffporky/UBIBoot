@@ -26,12 +26,18 @@ static char *kernel_params [] = {
 	[0] = "linux",
 	[1] = "mem=0x0000M",
 	[2] = "",
+	[3] = "",
 #ifdef JZ_SLCD_PANEL
 	"jz4740_slcd_panels.panel=" JZ_SLCD_PANEL,
 #endif
 };
 
 static void set_alt_param(void)
+{
+	kernel_params[3] = "kernel_bak";
+}
+
+static void set_alt2_param(void)
 {
 	kernel_params[2] = "rootfs_bak";
 }
@@ -71,9 +77,11 @@ void c_main(void)
 		if (!alt_key_pressed()) {
 			boot = !mmc_load_kernel((unsigned char *) LD_ADDR,
 						FAT_BOOTFILE_NAME, FAT_BOOTFILE_EXT);
-			if (!boot)
+			if (!boot) {
 				boot = !mmc_load_kernel((unsigned char *) LD_ADDR,
 							FAT_BOOTFILE_ALT_NAME, FAT_BOOTFILE_ALT_EXT);
+				set_alt_param();
+			}
 		}
 
 		/* Alt key is pressed: try to boot the alt kernel;
@@ -84,6 +92,8 @@ void c_main(void)
 			if (!boot)
 				boot = !mmc_load_kernel((unsigned char *) LD_ADDR,
 							FAT_BOOTFILE_NAME, FAT_BOOTFILE_EXT);
+			else
+				set_alt_param();
 		}
 	}
 
@@ -109,7 +119,7 @@ void c_main(void)
 #endif /* USE_NAND */
 
 	if (alt2_key_pressed())
-		set_alt_param();
+		set_alt2_param();
 
 	set_mem_param();
 
